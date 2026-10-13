@@ -112,7 +112,10 @@ La perspectiva será lateral, y la cámara será multiobjetivo con zoom dinámic
 Se usará una baja resolución y posteriormente se escalará, con un escalado de enteros para agrandar los píxeles.
 
 ### 5.5. Bocetos
-*Pistola*
+![ConceptEscenario](Imagenes/BocetoEscenario1.jpg)
+![PistolaSimple](Imagenes/Pistola_T.png)
+![Escopeta](Imagenes/Escopeta_T.png)
+
 
 ### 5.6. Inspiración
 La principal inspiración de este juego es Duck Game, pero también hay cierta inspiración en el juego Smash Bros.
@@ -135,11 +138,12 @@ Los personajes en este juego serán castores con diferentes rasgos que les difer
 * **Clas “el veterano”:** Es el más mayor de todos, debido a esto se sabe todos los trucos para poder sobrevivir, además de contar con una sabiduría muy extensa. Sus dientes frontales son más largos debido a que estos nunca dejan de crecer.
 
 ### 6.3. Armas
-Hay 4 tipos de armas por ahora:
+Hay 5 tipos de armas por ahora:
 * **La pistola simple:** Una pistola semiautomática que llevan cada personaje por defecto, es muy buena ya que no ocupa casi espacio pero es más lenta a la hora de disparar.
 * **La uzi:** Subfusil semiautomático, es muy buena puesto que tiene una cadencia de disparo muy rápida pero con un alcance corto.
 * **Fusil:** Se encontrarán dispersos por el mundo, los cuales son muchos más grandes que las pistolas pero al ser un arma automática será notablemente más rápida entre disparos.
 * **Granadas:** Igual que los fusiles se encontraban dispersos por la zona y son muy volátiles, deberán de tener cuidado donde las lanzas, porque como te caiga en los pies podrás salir mal parado.
+* **Escopeta:** Arma con gran daño, pero corto alcance. Es ideal para enfrentamientos a corta distancia a pesar de que tiene una cadencia baja.
 
 ---
 
