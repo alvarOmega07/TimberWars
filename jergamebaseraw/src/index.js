@@ -8,7 +8,7 @@ import { OptionsScene } from './scenes/OptionsScene.js';
 const config = {
     type: Phaser.AUTO,      // WebGL si está disponible; si no, Canvas
     width: 800,
-    height: 600,
+    height: 640,
     physics: {
         default: 'arcade',
         arcade: {
