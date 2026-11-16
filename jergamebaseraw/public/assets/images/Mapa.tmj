@@ -58,6 +58,12 @@
          "id":3,
          "name":"Suelo",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"Solid",
+                 "type":"bool",
+                 "value":true
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":25,
