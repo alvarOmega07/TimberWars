@@ -12,7 +12,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 }
+            gravity: { y: 600 }
         }
     },
     scene: [MenuScene, OptionsScene, GameScene, PauseScene]      // La primera escena se inicia automáticamente
