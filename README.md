@@ -7,7 +7,7 @@
 # 
 
 
-# * **Descripción de la temática:** [Escribe aquí un resumen corto del juego.]
+# * **Descripción de la temática:** [TimberWars es un juego arcade multijugador 2D de acción frenética para navegador web ambientado en un mundo postapocalíptico dominado por castores. Los jugadores compiten en rondas rápidas recolectando armas para sobrevivir, donde un solo disparo o explosión basta para eliminar al rival y alzarse con la victoria.]
 
 # * **Asignatura:** Juegos en Red (3º Grado en Diseño y Desarrollo de Videojuegos - URJC)
 
