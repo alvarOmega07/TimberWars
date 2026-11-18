@@ -12,10 +12,59 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);
 
         this.facing = 'right';
+        this.weapon = null;
+
         this.cursors = scene.input.keyboard.createCursorKeys();
+        this.keyE = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        this.keySpace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyQ = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     }
 
-    update() {
+    tryPickUp(nearbyObject) {
+        // Si no hay objeto cerca o ya fue recogido, no hace nada
+        if (!nearbyObject || nearbyObject.isPickedUp) return;
+
+        // Solo cuando el usuario pulsa E, "despierta" el método del arma
+        if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+            nearbyObject.onPickUp(this);
+        }
+    }
+
+    update(nearbyObject) {
+       this.move();
+       this.tryPickUp(nearbyObject);
+       this.useWeapon();
+    }
+
+    equipWeapon(weapon){
+        this.weapon = weapon;
+        console.log('[Player] Arma equipada correctamente.');
+    }
+
+    unequipWeapon(){
+        this.weapon = null;
+        console.log('[Player] Arma desequipada correctamente.');
+    }
+
+    getWeapon() {
+        return this.weapon !== null;
+    }
+
+    useWeapon(){
+        if (!this.getWeapon()) return;
+
+        // Disparar con barra espaciadora
+        if (this.keySpace.isDown) {
+            this.weapon.shoot();
+        }
+
+        // Tirar / Soltar arma al suelo con Q
+        if (Phaser.Input.Keyboard.JustDown(this.keyQ)) {
+            this.weapon.drop();
+        }
+    }
+
+    move() {
         // Movimiento Horizontal
         if (this.cursors.left.isDown) {
             this.setVelocityX(-160);
@@ -34,4 +83,5 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityY(-350);
         }
     }
+
 }
