@@ -34,6 +34,10 @@ export class OptionsScene extends Phaser.Scene {
 
         this.resetButton = this.createTextButton(400, 430, 'RESTABLECER', () => this.resetSettings());
         this.backButton = this.createTextButton(400, 500, 'VOLVER', () => this.goBack());
+        this.add.text(400, 555, '↑ / ↓ Elegir · ← / → Ajustar · ENTER Confirmar · ESC Volver', {
+            fontSize: '14px',
+            color: '#94a3b8'
+        }).setOrigin(0.5);
         this.optionItems = [this.fullscreenLabel, this.resetButton, this.backButton];
         this.selectionMarker = this.add.rectangle(400, 210, 360, 52, 0xfacc15, 0.12).setStrokeStyle(2, 0xfacc15);
 
@@ -97,6 +101,9 @@ export class OptionsScene extends Phaser.Scene {
         this.updateRowValue(this.settingRows[index]);
         this.applyAudioSettings();
         this.saveSettings();
+        if (index === 1 && this.effectsVolume > 0 && this.cache.audio.exists('hit_sfx')) {
+            this.sound.play('hit_sfx', { volume: this.effectsVolume });
+        }
     }
 
     updateRowValue(row) {
@@ -133,8 +140,10 @@ export class OptionsScene extends Phaser.Scene {
     }
 
     applyAudioSettings() {
-        if (this.sound) this.sound.volume = this.effectsVolume;
-        this.sound?.setMute(this.effectsVolume === 0);
+        this.game.events.emit('audio-settings-changed', {
+            musicVolume: this.musicVolume,
+            effectsVolume: this.effectsVolume
+        });
     }
 
     updateSelection() {

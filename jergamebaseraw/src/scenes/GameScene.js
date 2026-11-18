@@ -7,6 +7,7 @@ export const GAME_STATES = {
     INIT: 'INIT',
     PLAYING: 'PLAYING',
     PAUSED: 'PAUSED',
+    TUTORIAL: 'TUTORIAL',
     GAME_OVER: 'GAME_OVER'
 };
 
@@ -34,8 +35,21 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.capaSuelo);
         this.physics.add.collider(this.pistola, this.capaSuelo);
 
+        this.backgroundMusic = this.sound.add('background_music', { loop: true });
+        this.applyAudioSettings();
+        this.backgroundMusic.play();
+        this.game.events.off('audio-settings-changed', this.applyAudioSettings, this);
+        this.game.events.on('audio-settings-changed', this.applyAudioSettings, this);
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupAudio, this);
+
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-        this.changeState(GAME_STATES.PLAYING);
+        if (localStorage.getItem('tutorialSeen') === 'true') {
+            this.changeState(GAME_STATES.PLAYING);
+        } else {
+            this.changeState(GAME_STATES.TUTORIAL);
+            this.scene.launch('TutorialScene');
+            this.scene.bringToTop('TutorialScene');
+        }
     }
 
     changeState(newState) {
@@ -47,6 +61,13 @@ export class GameScene extends Phaser.Scene {
         switch (newState) {
             case GAME_STATES.PLAYING:
                 this.physics.resume();
+                if (this.backgroundMusic) {
+                    if (this.backgroundMusic.isPaused) {
+                        this.backgroundMusic.resume();
+                    } else if (!this.backgroundMusic.isPlaying) {
+                        this.backgroundMusic.play();
+                    }
+                }
                 if (this.scene.isActive('PauseScene')) {
                     this.scene.stop('PauseScene');
                 }
@@ -55,13 +76,51 @@ export class GameScene extends Phaser.Scene {
             case GAME_STATES.PAUSED:
                 this.physics.pause();
                 if (this.player) this.player.setVelocity(0, 0);
+                if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
+                    this.backgroundMusic.pause();
+                }
                 this.scene.launch('PauseScene');
+                break;
+
+            case GAME_STATES.TUTORIAL:
+                this.physics.pause();
+                if (this.player) this.player.setVelocity(0, 0);
                 break;
 
             case GAME_STATES.GAME_OVER:
                 this.physics.pause();
                 if (this.player) this.player.setVelocity(0, 0);
+                if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
+                    this.backgroundMusic.pause();
+                }
                 break;
+        }
+    }
+
+    applyAudioSettings(settings) {
+        const musicVolume = settings
+            ? settings.musicVolume
+            : this.readVolumeSetting('musicVolume', 0.6);
+        this.effectsVolume = settings
+            ? settings.effectsVolume
+            : this.readVolumeSetting('effectsVolume', 0.8);
+
+        if (this.backgroundMusic) {
+            this.backgroundMusic.setVolume(musicVolume);
+        }
+    }
+
+    readVolumeSetting(key, fallback) {
+        const value = Number.parseFloat(localStorage.getItem(key));
+        return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : fallback;
+    }
+
+    cleanupAudio() {
+        this.game.events.off('audio-settings-changed', this.applyAudioSettings, this);
+        if (this.backgroundMusic) {
+            this.backgroundMusic.stop();
+            this.backgroundMusic.destroy();
+            this.backgroundMusic = null;
         }
     }
 

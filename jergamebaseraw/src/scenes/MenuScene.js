@@ -5,6 +5,11 @@ export class MenuScene extends Phaser.Scene {
         super('MenuScene');
     }
 
+    preload() {
+        this.load.audio('background_music', 'assets/audio/music.mp3');
+        this.load.audio('hit_sfx', 'assets/audio/hit.mp3');
+    }
+
     create() {
         this.cameras.main.setBackgroundColor('#111827');
         this.selectedIndex = 0;
@@ -34,7 +39,7 @@ export class MenuScene extends Phaser.Scene {
             color: '#f59e0b',
             fontStyle: 'bold'
         }).setOrigin(0, 0.5);
-        this.add.text(40, 470, 'Flechas  Mover / Saltar\nESC      Pausar', {
+        this.add.text(40, 470, '← / →   Mover\n↑         Saltar\nESC      Pausar', {
             fontSize: '18px',
             color: '#cbd5e1',
             lineSpacing: 10
@@ -50,9 +55,14 @@ export class MenuScene extends Phaser.Scene {
             color: '#ffffff'
         }).setOrigin(0, 0.5);
 
-        const playBtn = this.createMenuButton(620, 300, 'JUGAR', () => this.scene.start('GameScene'));
-        const optionsBtn = this.createMenuButton(620, 370, 'AJUSTES', () => this.scene.start('OptionsScene', { returnScene: 'MenuScene' }));
-        this.menuItems = [playBtn, optionsBtn];
+        const playBtn = this.createMenuButton(620, 270, 'JUGAR', () => this.scene.start('GameScene'));
+        const optionsBtn = this.createMenuButton(620, 345, 'AJUSTES', () => this.scene.start('OptionsScene', { returnScene: 'MenuScene' }));
+        const controlsBtn = this.createMenuButton(620, 420, 'CONTROLES', () => this.scene.start('ControlsScene', { returnScene: 'MenuScene' }));
+        this.menuItems = [playBtn, optionsBtn, controlsBtn];
+        this.add.text(620, 515, '↑ / ↓ Seleccionar · ENTER Confirmar', {
+            fontSize: '16px',
+            color: '#94a3b8'
+        }).setOrigin(0.5);
         this.updateSelection();
 
         this.cursorUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
@@ -66,12 +76,25 @@ export class MenuScene extends Phaser.Scene {
             color: '#00ff00'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
+            .setData('menuAction', callback)
             .on('pointerover', () => {
                 this.selectedIndex = this.menuItems.indexOf(button);
                 this.updateSelection();
             })
-            .on('pointerdown', callback);
+            .on('pointerdown', () => this.activateButton(button));
         return button;
+    }
+
+    activateButton(button) {
+        this.playUiSound();
+        button.getData('menuAction')();
+    }
+
+    playUiSound() {
+        const effectsVolume = Number(localStorage.getItem('effectsVolume') ?? 0.8);
+        if (this.cache.audio.exists('hit_sfx') && effectsVolume > 0) {
+            this.sound.play('hit_sfx', { volume: effectsVolume * 0.25 });
+        }
     }
 
     updateSelection() {
@@ -92,7 +115,7 @@ export class MenuScene extends Phaser.Scene {
             this.updateSelection();
         }
         if (Phaser.Input.Keyboard.JustDown(this.cursorEnter)) {
-            this.menuItems[this.selectedIndex].emit('pointerdown');
+            this.activateButton(this.menuItems[this.selectedIndex]);
         }
     }
 }
