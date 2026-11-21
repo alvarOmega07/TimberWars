@@ -79,6 +79,8 @@ export class Weapon extends GameObject {
         if (this.body) {
             this.body.enable = true;
             this.body.reset(player.x, player.y);
+            this.setDragX(100);
+
             // Aplicar un pequeño impulso al soltarla
             const dropImpulseX = (player.facing === 'right') ? 100 : -100;
             this.setVelocity(dropImpulseX, -100);

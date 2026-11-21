@@ -11,6 +11,8 @@ const config = {
     type: Phaser.AUTO,      // WebGL si está disponible; si no, Canvas
     width: 800,
     height: 640,
+    pixelArt: true,
+    roundPixels: true,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH

@@ -18,22 +18,43 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tiles_key', 'assets/images/tileset1.png');
-        this.load.tilemapTiledJSON('mapa1_key', 'assets/images/Mapa.tmj');
+        this.load.image('madera_key', 'assets/images/Tileset2.png');
+        this.load.image('tierra_key', 'assets/images/Tileset1.png');
+        this.load.image('agua_key', 'assets/images/Agua.png');
+        this.load.tilemapTiledJSON('mapa1_key', 'assets/images/MapaTimber.tmj');
     }
 
     create() {
-        this.createDummyTextures();
+        this.createDummyTextures(); //pistola y pj por ahora
 
-        this.mapManager = new SceneManager(this, 'mapa1_key', 'tiles_key', 'tileset1');
-        this.capaAire = this.mapManager.createLayer('Aire', false);
+        this.mapManager = new SceneManager(this, 'mapa1_key');
+
+        this.mapManager.addTileset('Madera', 'madera_key');
+        this.mapManager.addTileset('Tierra', 'tierra_key');
+        this.mapManager.addTileset('Agua', 'agua_key');
+
+        this.capaAgua = this.mapManager.createLayer('Agua', false);
+        this.capaFondo = this.mapManager.createLayer('Fondo', false);
         this.capaSuelo = this.mapManager.createLayer('Suelo', true);
+        this.capaDeco = this.mapManager.createLayer('Deco', false);
+        this.capaArmas = this.mapManager.createLayer('Armas', false);
 
-        this.player = new Player(this, 32, 64);
-        this.pistola = new Pistola(this, 300, 400); // Pistola en (300, 400)
+        const anchoMapa = this.mapManager.map.widthInPixels;
+        const altoMapa = this.mapManager.map.heightInPixels; 
+        this.physics.world.setBounds(0, 0, anchoMapa, altoMapa + 100);
+        this.physics.world.setBoundsCollision(false, false, false, false); //quita la colision de los bordes
+
+        this.player = new Player(this, 100, 465);
+
+        this.grupoPistolas = this.physics.add.group();
+        const pistola1 = new Pistola(this, 174, 336);
+        const pistola2 = new Pistola(this, 622, 334);
+
+        this.grupoPistolas.add(pistola1);
+        this.grupoPistolas.add(pistola2);
 
         this.physics.add.collider(this.player, this.capaSuelo);
-        this.physics.add.collider(this.pistola, this.capaSuelo);
+        this.physics.add.collider(this.grupoPistolas, this.capaSuelo);
 
         this.backgroundMusic = this.sound.add('background_music', { loop: true });
         this.applyAudioSettings();
@@ -88,12 +109,17 @@ export class GameScene extends Phaser.Scene {
                 break;
 
             case GAME_STATES.GAME_OVER:
-                this.physics.pause();
-                if (this.player) this.player.setVelocity(0, 0);
-                if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
-                    this.backgroundMusic.pause();
-                }
-                break;
+            this.physics.pause();
+            if (this.player) this.player.setVelocity(0, 0);
+            if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
+                this.backgroundMusic.pause();
+            }
+
+            //reinicia escena (HAY QUE PONER UNA ESCENA DE GAME OVER)
+            this.time.delayedCall(2000, () => {
+                this.scene.restart();
+            });
+            break;
         }
     }
 
@@ -127,6 +153,7 @@ export class GameScene extends Phaser.Scene {
     update(time, delta) {
         // Al pulsar ESC durante el gameplay pasa a PAUSED
         if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+            console.log(this.player.x, this.player.y);
             if (this.currentState === GAME_STATES.PLAYING) {
                 this.changeState(GAME_STATES.PAUSED);
             }
@@ -135,9 +162,10 @@ export class GameScene extends Phaser.Scene {
         if (this.currentState === GAME_STATES.PLAYING) {
             // Comprobar solapamiento entre el jugador y la pistola
             let nearbyItem = null;
-            if (this.physics.overlap(this.player, this.pistola)) {
-                nearbyItem = this.pistola;
-            }
+
+            this.physics.overlap(this.player, this.grupoPistolas, (player, pistola) => {
+                nearbyItem = pistola;
+            });
 
             // Actualizar la lógica del jugador pasando el objeto interactuable
             if (this.player) {

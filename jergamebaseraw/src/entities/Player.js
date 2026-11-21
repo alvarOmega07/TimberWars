@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { GAME_STATES } from '../scenes/GameScene.js';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, textureKey = 'player_sprite') {
@@ -34,6 +35,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
        this.move();
        this.tryPickUp(nearbyObject);
        this.useWeapon();
+
+    const limiteInferior = this.scene.mapManager?.map?.heightInPixels + 50 || 700;
+
+    if (this.y > limiteInferior) {
+        this.die();
+    }
     }
 
     equipWeapon(weapon){
@@ -82,6 +89,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.cursors.up.isDown && this.body.blocked.down) {
             this.setVelocityY(-350);
         }
+    }
+
+    die(){
+        if (this.currentState === GAME_STATES.GAME_OVER) return;
+
+        // Transición de estado a GAME_OVER
+        this.scene.changeState(GAME_STATES.GAME_OVER);
     }
 
 }

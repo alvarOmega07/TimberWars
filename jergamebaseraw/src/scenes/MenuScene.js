@@ -29,11 +29,6 @@ export class MenuScene extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0, 0.5);
 
-        this.add.text(40, 190, 'Aventura local', {
-            fontSize: '18px',
-            color: '#94a3b8'
-        }).setOrigin(0, 0.5);
-
         this.add.text(40, 430, 'CONTROLES', {
             fontSize: '20px',
             color: '#f59e0b',
