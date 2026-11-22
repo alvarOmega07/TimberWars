@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
-import { SceneManager } from '../scenes/SceneManager.js';
+import { SceneManager } from '../managers/SceneManager.js';
 import { Player } from '../entities/Player.js';
 import { Pistola } from '../entities/Pistola.js';
+import { Escopeta } from '../entities/Escopeta.js';
+import { AudioManager } from '../managers/AudioManager.js';
 
 export const GAME_STATES = {
     INIT: 'INIT',
@@ -25,10 +27,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.createDummyTextures(); //pistola y pj por ahora
+        this.createDummyTextures();
 
         this.mapManager = new SceneManager(this, 'mapa1_key');
-
         this.mapManager.addTileset('Madera', 'madera_key');
         this.mapManager.addTileset('Tierra', 'tierra_key');
         this.mapManager.addTileset('Agua', 'agua_key');
@@ -42,7 +43,7 @@ export class GameScene extends Phaser.Scene {
         const anchoMapa = this.mapManager.map.widthInPixels;
         const altoMapa = this.mapManager.map.heightInPixels; 
         this.physics.world.setBounds(0, 0, anchoMapa, altoMapa + 100);
-        this.physics.world.setBoundsCollision(false, false, false, false); //quita la colision de los bordes
+        this.physics.world.setBoundsCollision(false, false, false, false);
 
         this.player = new Player(this, 100, 465);
 
@@ -50,20 +51,21 @@ export class GameScene extends Phaser.Scene {
         const pistola1 = new Pistola(this, 174, 336);
         const pistola2 = new Pistola(this, 622, 334);
 
+        this.escopeta = new Escopeta(this, 400, 270);
+
         this.grupoPistolas.add(pistola1);
         this.grupoPistolas.add(pistola2);
 
         this.physics.add.collider(this.player, this.capaSuelo);
         this.physics.add.collider(this.grupoPistolas, this.capaSuelo);
+        this.physics.add.collider(this.escopeta, this.capaSuelo);
 
-        this.backgroundMusic = this.sound.add('background_music', { loop: true });
-        this.applyAudioSettings();
-        this.backgroundMusic.play();
-        this.game.events.off('audio-settings-changed', this.applyAudioSettings, this);
-        this.game.events.on('audio-settings-changed', this.applyAudioSettings, this);
-        this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanupAudio, this);
+        // Instanciar gestor de audio e iniciar la música
+        this.audioManager = new AudioManager(this, 'background_music');
+        this.audioManager.playMusic();
 
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+        
         if (localStorage.getItem('tutorialSeen') === 'true') {
             this.changeState(GAME_STATES.PLAYING);
         } else {
@@ -82,12 +84,8 @@ export class GameScene extends Phaser.Scene {
         switch (newState) {
             case GAME_STATES.PLAYING:
                 this.physics.resume();
-                if (this.backgroundMusic) {
-                    if (this.backgroundMusic.isPaused) {
-                        this.backgroundMusic.resume();
-                    } else if (!this.backgroundMusic.isPlaying) {
-                        this.backgroundMusic.play();
-                    }
+                if (this.audioManager) {
+                    this.audioManager.playMusic();
                 }
                 if (this.scene.isActive('PauseScene')) {
                     this.scene.stop('PauseScene');
@@ -97,8 +95,8 @@ export class GameScene extends Phaser.Scene {
             case GAME_STATES.PAUSED:
                 this.physics.pause();
                 if (this.player) this.player.setVelocity(0, 0);
-                if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
-                    this.backgroundMusic.pause();
+                if (this.audioManager) {
+                    this.audioManager.pauseMusic();
                 }
                 this.scene.launch('PauseScene');
                 break;
@@ -109,49 +107,20 @@ export class GameScene extends Phaser.Scene {
                 break;
 
             case GAME_STATES.GAME_OVER:
-            this.physics.pause();
-            if (this.player) this.player.setVelocity(0, 0);
-            if (this.backgroundMusic && this.backgroundMusic.isPlaying) {
-                this.backgroundMusic.pause();
-            }
+                this.physics.pause();
+                if (this.player) this.player.setVelocity(0, 0);
+                if (this.audioManager) {
+                    this.audioManager.pauseMusic();
+                }
 
-            //reinicia escena (HAY QUE PONER UNA ESCENA DE GAME OVER)
-            this.time.delayedCall(2000, () => {
-                this.scene.restart();
-            });
-            break;
-        }
-    }
-
-    applyAudioSettings(settings) {
-        const musicVolume = settings
-            ? settings.musicVolume
-            : this.readVolumeSetting('musicVolume', 0.6);
-        this.effectsVolume = settings
-            ? settings.effectsVolume
-            : this.readVolumeSetting('effectsVolume', 0.8);
-
-        if (this.backgroundMusic) {
-            this.backgroundMusic.setVolume(musicVolume);
-        }
-    }
-
-    readVolumeSetting(key, fallback) {
-        const value = Number.parseFloat(localStorage.getItem(key));
-        return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : fallback;
-    }
-
-    cleanupAudio() {
-        this.game.events.off('audio-settings-changed', this.applyAudioSettings, this);
-        if (this.backgroundMusic) {
-            this.backgroundMusic.stop();
-            this.backgroundMusic.destroy();
-            this.backgroundMusic = null;
+                this.time.delayedCall(2000, () => {
+                    this.scene.restart();
+                });
+                break;
         }
     }
 
     update(time, delta) {
-        // Al pulsar ESC durante el gameplay pasa a PAUSED
         if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
             console.log(this.player.x, this.player.y);
             if (this.currentState === GAME_STATES.PLAYING) {
@@ -160,14 +129,16 @@ export class GameScene extends Phaser.Scene {
         }
 
         if (this.currentState === GAME_STATES.PLAYING) {
-            // Comprobar solapamiento entre el jugador y la pistola
             let nearbyItem = null;
 
             this.physics.overlap(this.player, this.grupoPistolas, (player, pistola) => {
                 nearbyItem = pistola;
             });
 
-            // Actualizar la lógica del jugador pasando el objeto interactuable
+            this.physics.overlap(this.player, this.escopeta, (player, escopeta) => {
+                nearbyItem = escopeta;
+            });
+
             if (this.player) {
                 this.player.update(nearbyItem);
             }
@@ -184,9 +155,23 @@ export class GameScene extends Phaser.Scene {
 
         if (!this.textures.exists('pistol_dummy')) {
             const gPistola = this.make.graphics({ width: 16, height: 10, add: false });
-            gPistola.fillStyle(0x4caf50);
-            gPistola.fillRect(0, 0, 16, 10);
+            gPistola.fillStyle(0xF2F527);
+            gPistola.fillRect(0, 0, 10, 10);
             gPistola.generateTexture('pistol_dummy', 16, 10);
+        }
+
+        if (!this.textures.exists('shotgun_dummy')) {
+            const gEscopeta = this.make.graphics({ width: 16, height: 10, add: false });
+            gEscopeta.fillStyle(0x4caf50);
+            gEscopeta.fillRect(0, 0, 16, 10);
+            gEscopeta.generateTexture('shotgun_dummy', 16, 10);
+        }
+
+        if (!this.textures.exists('bullet_dummy')) {
+            const gBala = this.make.graphics({ width: 6, height: 6, add: false });
+            gBala.fillStyle(0xfacc15);
+            gBala.fillCircle(3, 3, 3);
+            gBala.generateTexture('bullet_dummy', 6, 6);
         }
     }
 }

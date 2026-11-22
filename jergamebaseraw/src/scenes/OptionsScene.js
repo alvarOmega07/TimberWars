@@ -59,25 +59,6 @@ export class OptionsScene extends Phaser.Scene {
         return value === null ? fallback : Math.max(0, Math.min(1, parseFloat(value) || 0));
     }
 
-    createSettingRow(index, y, label) {
-        const labelText = this.add.text(290, y, label, {
-            fontSize: '28px',
-            color: '#cbd5e1'
-        }).setOrigin(0.5);
-
-        const minus = this.createTextButton(430, y, '-', () => this.changeVolume(index, -0.1));
-        const plus = this.createTextButton(610, y, '+', () => this.changeVolume(index, 0.1));
-        const valueText = this.add.text(520, y, '', {
-            fontSize: '28px',
-            color: '#f59e0b'
-        }).setOrigin(0.5);
-
-        const row = { index, labelText, minus, plus, valueText };
-        if (!this.settingRows) this.settingRows = [];
-        this.settingRows.push(row);
-        this.updateRowValue(row);
-    }
-
     createTextButton(x, y, label, callback) {
         const button = this.add.text(x, y, label, {
             fontSize: '28px',
@@ -92,22 +73,56 @@ export class OptionsScene extends Phaser.Scene {
         return button;
     }
 
+    createSettingRow(index, y, label) {
+    this.add.text(290, y, label, {
+        fontSize: '28px',
+        color: '#cbd5e1'
+    }).setOrigin(0.5);
+
+    this.createTextButton(430, y, '-', () => this.changeVolume(index, -0.1));
+    this.createTextButton(610, y, '+', () => this.changeVolume(index, 0.1));
+
+    const initialVolume = index === 0 ? this.musicVolume : this.effectsVolume;
+    
+    // Instanciar el objeto de texto del porcentaje
+    const valueText = this.add.text(520, y, `${Math.round(initialVolume * 100)}%`, {
+        fontSize: '28px',
+        color: '#f59e0b'
+    }).setOrigin(0.5);
+
+    const row = { index, valueText };
+    if (!this.settingRows) this.settingRows = [];
+    this.settingRows.push(row);
+    }
+
     changeVolume(index, amount) {
+        if (!this.settingRows || !this.settingRows[index]) return;
+
+        // Actualizar los valores numéricos
         if (index === 0) {
             this.musicVolume = Math.max(0, Math.min(1, parseFloat((this.musicVolume + amount).toFixed(1))));
         } else {
             this.effectsVolume = Math.max(0, Math.min(1, parseFloat((this.effectsVolume + amount).toFixed(1))));
         }
+        
+        // Actualizar el texto en pantalla en vivo
         this.updateRowValue(this.settingRows[index]);
+        
+        // Notificar cambios al sistema de audio y guardar en localStorage
         this.applyAudioSettings();
         this.saveSettings();
+
+        // Reproducir feedback de sonido si se ajustan los efectos
         if (index === 1 && this.effectsVolume > 0 && this.cache.audio.exists('hit_sfx')) {
             this.sound.play('hit_sfx', { volume: this.effectsVolume });
         }
     }
 
     updateRowValue(row) {
+        if (!row || !row.valueText) return;
+
         const value = row.index === 0 ? this.musicVolume : this.effectsVolume;
+        // Forzar la actualización del texto en vivo
         row.valueText.setText(`${Math.round(value * 100)}%`);
     }
 
@@ -123,15 +138,21 @@ export class OptionsScene extends Phaser.Scene {
     }
 
     resetSettings() {
-        this.musicVolume = 0.6;
-        this.effectsVolume = 0.8;
-        this.fullscreen = false;
+    this.musicVolume = 0.6;
+    this.effectsVolume = 0.8;
+    this.fullscreen = false;
+    
+    // Actualizar en vivo las etiquetas del porcentaje
+    if (this.settingRows) {
         this.settingRows.forEach(row => this.updateRowValue(row));
-        this.fullscreenText.setText('No');
-        if (this.scale.isFullscreen) this.scale.stopFullscreen();
-        this.saveSettings();
-        this.applyAudioSettings();
     }
+    
+    this.fullscreenText.setText('No');
+    if (this.scale.isFullscreen) this.scale.stopFullscreen();
+    
+    this.saveSettings();
+    this.applyAudioSettings();
+    }   
 
     saveSettings() {
         localStorage.setItem('musicVolume', this.musicVolume);
