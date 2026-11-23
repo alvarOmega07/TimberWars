@@ -4,6 +4,9 @@ export class Weapon extends GameObject {
     constructor(scene, x, y, textureKey, config = {}) {
         super(scene, x, y, textureKey);
 
+        this.setOrigin(0.5, 0.5);
+        this.clearTint();
+
         // --- ATRIBUTOS Y MUNICIÓN ---
         this.maxAmmoInMag = config.maxAmmoInMag || 6;  // Capacidad del cargador
         this.currentAmmo = this.maxAmmoInMag;          // Balas actuales en el cargador

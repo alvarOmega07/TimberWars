@@ -7,7 +7,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         // Añadir a la escena y activar físicas
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
         this.setBounce(0.1);
         this.setCollideWorldBounds(true);
 
@@ -37,6 +36,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         // El jugador usa su tecla asignada para recoger el arma.
         if (Phaser.Input.Keyboard.JustDown(this.keys.pickup)) {
+            if(this.getWeapon()){
+            console.log('Ya hay un arma equipada');
+            return;
+            }
             nearbyObject.onPickUp(this);
         }
     }

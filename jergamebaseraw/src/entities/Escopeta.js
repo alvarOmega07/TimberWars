@@ -2,7 +2,7 @@ import { Weapon } from './Weapon.js';
 
 export class Escopeta extends Weapon {
     constructor(scene, x, y) {
-        super(scene, x, y, 'shotgun_dummy', {
+        super(scene, x, y, 'shotgun', {
         });
 
         this.currentAmmo = 5;

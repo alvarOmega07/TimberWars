@@ -27,6 +27,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('tierra_key', 'assets/images/Tileset1.png');
         this.load.image('agua_key', 'assets/images/Agua.png');
         this.load.tilemapTiledJSON('mapa1_key', 'assets/images/MapaTimber.tmj');
+        this.load.image('pistol', 'assets/images/pistol.png');
+        this.load.image('shotgun', 'assets/images/shotgun.png');
     }
 
     create() {
@@ -48,7 +50,7 @@ export class GameScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, anchoMapa, altoMapa + 100);
         this.physics.world.setBoundsCollision(false, false, false, false);
 
-        this.player = new Player(this, 100, 465, 'player_dummy', {
+        this.player = new Player(this, 100, 400, 'player_dummy', {
             moveKeys: {
                 left: Phaser.Input.Keyboard.KeyCodes.A,
                 right: Phaser.Input.Keyboard.KeyCodes.D,
@@ -56,9 +58,10 @@ export class GameScene extends Phaser.Scene {
             },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.E,
             shootKey: Phaser.Input.Keyboard.KeyCodes.SPACE,
-            dropKey: Phaser.Input.Keyboard.KeyCodes.G
+            dropKey: Phaser.Input.Keyboard.KeyCodes.Q
         });
-        this.player2 = new Player(this, anchoMapa - 100, 465, 'player2_dummy', {
+        
+        this.player2 = new Player(this, anchoMapa - 100, 400, 'player2_dummy', {
             moveKeys: {
                 left: Phaser.Input.Keyboard.KeyCodes.LEFT,
                 right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
@@ -68,11 +71,12 @@ export class GameScene extends Phaser.Scene {
             shootKey: Phaser.Input.Keyboard.KeyCodes.J,
             dropKey: Phaser.Input.Keyboard.KeyCodes.L
         });
-        this.grupoPistolas = this.physics.add.group();
-        const pistola1 = new Pistola(this, 174, 336);
-        const pistola2 = new Pistola(this, 622, 334);
 
-        this.escopeta = new Escopeta(this, 400, 270);
+        this.grupoPistolas = this.physics.add.group();
+        const pistola1 = new Pistola(this, 174, 336, 'pistol');
+        const pistola2 = new Pistola(this, 622, 334, 'pistol');
+
+        this.escopeta = new Escopeta(this, 400, 270, 'shotgun');
         this.weapons = [pistola1, pistola2, this.escopeta];
         this.weaponSpawnPositions = [[174, 336], [622, 334], [400, 270]];
 
@@ -243,8 +247,8 @@ export class GameScene extends Phaser.Scene {
         });
 
         [
-            [this.player, 100, 465],
-            [this.player2, this.mapManager.map.widthInPixels - 100, 465]
+            [this.player, 100, 400],
+            [this.player2, this.mapManager.map.widthInPixels - 100, 400]
         ].forEach(([player, x, y]) => {
             player.isDead = false;
             player.setActive(true);

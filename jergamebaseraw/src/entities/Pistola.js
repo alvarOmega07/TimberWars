@@ -1,9 +1,9 @@
 import { Weapon } from './Weapon.js';
 
 export class Pistola extends Weapon {
-    constructor(scene, x, y) {
+    constructor(scene, x, y, textureKey) {
         // Usa la textura 'pistol_dummy'
-        super(scene, x, y, 'pistol_dummy', {
+        super(scene, x, y, textureKey, {
             maxAmmo: 5,
             fireRate: 250,
             bulletSpeed: 500
