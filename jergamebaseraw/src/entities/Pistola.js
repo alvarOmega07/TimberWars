@@ -20,6 +20,7 @@ export class Pistola extends Weapon {
         const bullet = this.bulletsGroup.create(bulletX, bulletY, 'bullet_dummy');
 
         if (bullet) {
+            bullet.setData('shooter', this.owner);
             // Desactivar gravedad para que la bala vaya en línea recta horizontal
             bullet.body.allowGravity = false;
             

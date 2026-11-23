@@ -93,4 +93,23 @@ export class Weapon extends GameObject {
 
         console.log('[Arma] Soltada en el suelo.');
     }
+
+    resetTo(x, y) {
+        if (this.owner) {
+            this.owner.unequipWeapon();
+        }
+
+        this.bulletsGroup.clear(true, true);
+        this.owner = null;
+        this.isPickedUp = false;
+        this.setPosition(x, y);
+        this.setVisible(true);
+        this.setActive(true);
+
+        if (this.body) {
+            this.body.enable = true;
+            this.body.reset(x, y);
+            this.setVelocity(0, 0);
+        }
+    }
 }

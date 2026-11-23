@@ -34,8 +34,8 @@ export class MenuScene extends Phaser.Scene {
             color: '#f59e0b',
             fontStyle: 'bold'
         }).setOrigin(0, 0.5);
-        this.add.text(40, 470, '← / →   Mover\n↑         Saltar\nESC      Pausar', {
-            fontSize: '18px',
+        this.add.text(40, 470, 'J1: A / D mover, W saltar\nJ2: ← / → mover, ↑ saltar\nESC  Pausar', {
+            fontSize: '15px',
             color: '#cbd5e1',
             lineSpacing: 10
         }).setOrigin(0, 0.5);

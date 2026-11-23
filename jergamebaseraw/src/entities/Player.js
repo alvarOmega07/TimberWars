@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
-import { GAME_STATES } from '../scenes/GameScene.js';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, textureKey = 'player_sprite') {
+    constructor(scene, x, y, textureKey = 'player_dummy', controls = {}) {
         super(scene, x, y, textureKey);
 
         // Añadir a la escena y activar físicas
@@ -14,19 +13,30 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.facing = 'right';
         this.weapon = null;
+        this.isDead = false;
 
-        this.cursors = scene.input.keyboard.createCursorKeys();
-        this.keyE = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-        this.keySpace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.keyQ = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        const keyboard = scene.input.keyboard;
+        this.moveKeys = controls.moveKeys || {
+            left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+            right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            jump: Phaser.Input.Keyboard.KeyCodes.UP
+        };
+        this.keys = {
+            left: keyboard.addKey(this.moveKeys.left),
+            right: keyboard.addKey(this.moveKeys.right),
+            jump: keyboard.addKey(this.moveKeys.jump),
+            pickup: keyboard.addKey(controls.pickupKey || Phaser.Input.Keyboard.KeyCodes.E),
+            shoot: keyboard.addKey(controls.shootKey || Phaser.Input.Keyboard.KeyCodes.SPACE),
+            drop: keyboard.addKey(controls.dropKey || Phaser.Input.Keyboard.KeyCodes.Q)
+        };
     }
 
     tryPickUp(nearbyObject) {
         // Si no hay objeto cerca o ya fue recogido, no hace nada
         if (!nearbyObject || nearbyObject.isPickedUp) return;
 
-        // Solo cuando el usuario pulsa E, "despierta" el método del arma
-        if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+        // El jugador usa su tecla asignada para recoger el arma.
+        if (Phaser.Input.Keyboard.JustDown(this.keys.pickup)) {
             nearbyObject.onPickUp(this);
         }
     }
@@ -60,24 +70,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     useWeapon(){
         if (!this.getWeapon()) return;
 
-        // Disparar con barra espaciadora
-        if (this.keySpace.isDown) {
+        // Disparar con la tecla asignada al jugador.
+        if (this.keys.shoot.isDown) {
             this.weapon.shoot();
         }
 
-        // Tirar / Soltar arma al suelo con Q
-        if (Phaser.Input.Keyboard.JustDown(this.keyQ)) {
+        // Tirar / soltar el arma con la tecla asignada al jugador.
+        if (Phaser.Input.Keyboard.JustDown(this.keys.drop)) {
             this.weapon.drop();
         }
     }
 
     move() {
         // Movimiento Horizontal
-        if (this.cursors.left.isDown) {
+        if (this.keys.left.isDown) {
             this.setVelocityX(-160);
             this.facing = 'left';
             this.setFlipX(true); // Invierte la imagen horizontalmente cuando mira a la izquierda
-        } else if (this.cursors.right.isDown) {
+        } else if (this.keys.right.isDown) {
             this.setVelocityX(160);
             this.facing = 'right';
             this.setFlipX(false); // Orientación original hacia la derecha
@@ -86,16 +96,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         // Salto
-        if (this.cursors.up.isDown && this.body.blocked.down) {
+        if (this.keys.jump.isDown && this.body.blocked.down) {
             this.setVelocityY(-350);
         }
     }
 
     die(){
-        if (this.currentState === GAME_STATES.GAME_OVER) return;
-
-        // Transición de estado a GAME_OVER
-        this.scene.changeState(GAME_STATES.GAME_OVER);
+        if (this.isDead) return;
+        this.isDead = true;
+        this.scene.playerDied(this);
     }
 
 }

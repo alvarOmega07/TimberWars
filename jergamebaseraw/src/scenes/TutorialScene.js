@@ -15,8 +15,8 @@ export class TutorialScene extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        this.add.text(400, 300, 'Explora el mapa y prueba el movimiento.\n\n← / →  Moverse\n↑  Saltar\nESC  Abrir el menú de pausa', {
-            fontSize: '23px',
+        this.add.text(400, 295, '¡Duelo para dos jugadores!\n\nJugador 1: A / D mover, W saltar\nE recoger, ESPACIO disparar, G soltar\n\nJugador 2: ← / → mover, ↑ saltar\nK recoger, J disparar, L soltar\n\nMejor de 5: gana quien llegue a 3 puntos.\nESC  Abrir el menú de pausa', {
+            fontSize: '16px',
             color: '#cbd5e1',
             align: 'center',
             lineSpacing: 8
