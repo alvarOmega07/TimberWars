@@ -3,11 +3,14 @@ import { Weapon } from './Weapon.js';
 export class Escopeta extends Weapon {
     constructor(scene, x, y) {
         super(scene, x, y, 'shotgun', {
+            maxAmmoInMag: 2,
+            reloadTime: 750,
+            fireRate: 350,
+            bulletSpeed: 500,
+            fireSoundKey: 'shotgun_sfx',
+            shotShake: 0.003
         });
 
-        this.currentAmmo = 5;
-        this.fireRate = 350;
-        this.bulletSpeed = 500;
         this.bullets_shot = 5;
         this.dispersion = 0.5; // Radianes de apertura
     }
@@ -21,6 +24,7 @@ export class Escopeta extends Weapon {
         const bulletX = this.owner.x + offsetX;
         const bulletY = this.owner.y;
         const baseAngle = isRight ? 0 : Math.PI;
+        this.showMuzzleFlash(bulletX, bulletY, 0xfb923c, 12);
 
         for (let i = 0; i < this.bullets_shot; i++) {
             const bullet = this.bulletsGroup.create(bulletX, bulletY, 'bullet_dummy');

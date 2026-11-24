@@ -3,9 +3,12 @@ import { Weapon } from './Weapon.js';
 export class Pistola extends Weapon {
     constructor(scene, x, y, textureKey) {
         super(scene, x, y, textureKey, {
-            maxAmmo: 5,
+            maxAmmoInMag: 5,
+            reloadTime: 1500,
             fireRate: 250,
-            bulletSpeed: 500
+            bulletSpeed: 500,
+            fireSoundKey: 'pistol_sfx',
+            shotShake: 0.0015
         });
     }
 
@@ -14,6 +17,7 @@ export class Pistola extends Weapon {
         const offsetX = (this.owner.facing === 'right') ? 24 : -24;
         const bulletX = this.owner.x + offsetX;
         const bulletY = this.owner.y;
+        this.showMuzzleFlash(bulletX, bulletY);
 
         // Crear el proyectil en el grupo de físicas heredado de Weapon
         const bullet = this.bulletsGroup.create(bulletX, bulletY, 'bullet_dummy');

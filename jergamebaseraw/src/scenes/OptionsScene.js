@@ -11,35 +11,49 @@ export class OptionsScene extends Phaser.Scene {
         this.fullscreen = localStorage.getItem('fullscreen') === 'true';
         this.returnScene = data.returnScene || 'MenuScene';
         this.selectedIndex = 0;
+        this.settingRows = [];
 
-        this.add.rectangle(400, 320, 800, 640, 0x0f172a, 0.88);
-        this.add.rectangle(400, 320, 640, 540, 0x172033).setStrokeStyle(2, 0x334155);
+        this.add.rectangle(400, 320, 800, 640, 0x080e1a, 0.94);
+        this.add.rectangle(400, 320, 640, 560, 0x111c2f).setStrokeStyle(2, 0x475569);
+        this.add.rectangle(400, 42, 640, 4, 0xf59e0b);
 
-        this.add.text(400, 70, 'AJUSTES', {
-            fontSize: '48px',
-            color: '#ffffff',
+        this.add.text(400, 88, 'AJUSTES', {
+            fontSize: '42px',
+            color: '#f8fafc',
             fontStyle: 'bold'
         }).setOrigin(0.5);
-
-        this.createSettingRow(0, 210, 'Música');
-        this.createSettingRow(1, 280, 'Efectos');
-        this.fullscreenText = this.add.text(520, 350, this.fullscreen ? 'Sí' : 'No', {
-            fontSize: '28px',
-            color: '#f59e0b'
+        this.add.text(400, 125, 'Personaliza tu experiencia de juego', {
+            fontSize: '15px',
+            color: '#94a3b8'
         }).setOrigin(0.5);
-        this.fullscreenLabel = this.add.text(290, 350, 'Pantalla completa', {
-            fontSize: '28px',
+
+        this.createSettingRow(0, 220, 'Música');
+        this.createSettingRow(1, 295, 'Efectos');
+        this.fullscreenText = this.add.text(560, 370, this.fullscreen ? 'ACTIVADA' : 'DESACTIVADA', {
+            fontSize: '16px',
+            color: '#e2e8f0',
+            backgroundColor: '#1e293b',
+            padding: { x: 16, y: 9 },
+            fontStyle: 'bold'
+        }).setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.toggleFullscreen())
+            .on('pointerover', () => this.fullscreenText.setColor('#facc15'))
+            .on('pointerout', () => this.fullscreenText.setColor('#e2e8f0'));
+        this.fullscreenLabel = this.add.text(220, 370, 'Pantalla completa', {
+            fontSize: '20px',
             color: '#cbd5e1'
         }).setOrigin(0.5);
 
-        this.resetButton = this.createTextButton(400, 430, 'RESTABLECER', () => this.resetSettings());
-        this.backButton = this.createTextButton(400, 500, 'VOLVER', () => this.goBack());
-        this.add.text(400, 555, '↑ / ↓ Elegir · ← / → Ajustar · ENTER Confirmar · ESC Volver', {
-            fontSize: '14px',
+        this.resetButton = this.createTextButton(400, 455, 'RESTABLECER', () => this.resetSettings());
+        this.backButton = this.createTextButton(400, 520, 'VOLVER', () => this.goBack());
+        this.add.text(400, 575, '↑ / ↓ ELEGIR    ← / → AJUSTAR    ENTER CONFIRMAR    ESC VOLVER', {
+            fontSize: '12px',
             color: '#94a3b8'
         }).setOrigin(0.5);
         this.optionItems = [this.fullscreenLabel, this.resetButton, this.backButton];
-        this.selectionMarker = this.add.rectangle(400, 210, 360, 52, 0xfacc15, 0.12).setStrokeStyle(2, 0xfacc15);
+        this.selectionMarker = this.add.rectangle(400, 220, 530, 62, 0xf59e0b, 0.06)
+            .setStrokeStyle(2, 0xf59e0b);
 
         this.keys = {
             up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
@@ -61,38 +75,40 @@ export class OptionsScene extends Phaser.Scene {
 
     createTextButton(x, y, label, callback) {
         const button = this.add.text(x, y, label, {
-            fontSize: '28px',
-            color: '#22c55e',
-            backgroundColor: '#111827',
-            padding: { x: 14, y: 8 }
+            fontSize: '19px',
+            color: '#e2e8f0',
+            backgroundColor: '#1e293b',
+            padding: { x: 20, y: 9 },
+            fontStyle: 'bold'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', callback)
-            .on('pointerover', () => button.setAlpha(0.75))
-            .on('pointerout', () => button.setAlpha(1))
+            .on('pointerover', () => button.setColor('#facc15'))
+            .on('pointerout', () => button.setColor('#e2e8f0'));
         return button;
     }
 
     createSettingRow(index, y, label) {
-    this.add.text(290, y, label, {
-        fontSize: '28px',
-        color: '#cbd5e1'
-    }).setOrigin(0.5);
+        this.add.rectangle(400, y, 530, 58, 0x1e293b).setStrokeStyle(1, 0x334155);
+        this.add.text(190, y, label, {
+            fontSize: '20px',
+            color: '#cbd5e1',
+            fontStyle: 'bold'
+        }).setOrigin(0, 0.5);
 
-    this.createTextButton(430, y, '-', () => this.changeVolume(index, -0.1));
-    this.createTextButton(610, y, '+', () => this.changeVolume(index, 0.1));
+        this.createTextButton(420, y, '−', () => this.changeVolume(index, -0.1));
+        this.createTextButton(620, y, '+', () => this.changeVolume(index, 0.1));
 
-    const initialVolume = index === 0 ? this.musicVolume : this.effectsVolume;
-    
-    // Instanciar el objeto de texto del porcentaje
-    const valueText = this.add.text(520, y, `${Math.round(initialVolume * 100)}%`, {
-        fontSize: '28px',
-        color: '#f59e0b'
-    }).setOrigin(0.5);
+        const initialVolume = index === 0 ? this.musicVolume : this.effectsVolume;
+        const valueText = this.add.text(520, y, `${Math.round(initialVolume * 100)}%`, {
+            fontSize: '20px',
+            color: '#fbbf24',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
 
-    const row = { index, valueText };
-    if (!this.settingRows) this.settingRows = [];
-    this.settingRows.push(row);
+        const row = { index, valueText };
+        if (!this.settingRows) this.settingRows = [];
+        this.settingRows.push(row);
     }
 
     changeVolume(index, amount) {
@@ -128,7 +144,7 @@ export class OptionsScene extends Phaser.Scene {
 
     toggleFullscreen() {
         this.fullscreen = !this.fullscreen;
-        this.fullscreenText.setText(this.fullscreen ? 'Sí' : 'No');
+        this.fullscreenText.setText(this.fullscreen ? 'ACTIVADA' : 'DESACTIVADA');
         if (this.fullscreen) {
             if (!this.scale.isFullscreen) this.scale.startFullscreen();
         } else if (this.scale.isFullscreen) {
@@ -147,7 +163,7 @@ export class OptionsScene extends Phaser.Scene {
         this.settingRows.forEach(row => this.updateRowValue(row));
     }
     
-    this.fullscreenText.setText('No');
+    this.fullscreenText.setText('DESACTIVADA');
     if (this.scale.isFullscreen) this.scale.stopFullscreen();
     
     this.saveSettings();
@@ -170,9 +186,9 @@ export class OptionsScene extends Phaser.Scene {
     updateSelection() {
         if (!this.selectionMarker || !this.settingRows) return;
 
-        const yPositions = [210, 280, 350, 430, 500];
+        const yPositions = [220, 295, 370, 455, 520];
         this.selectionMarker.setPosition(400, yPositions[this.selectedIndex]);
-        this.selectionMarker.setSize(this.selectedIndex < 2 ? 360 : 300, 52);
+        this.selectionMarker.setSize(this.selectedIndex < 3 ? 530 : 300, this.selectedIndex < 3 ? 62 : 54);
     }
 
     goBack() {

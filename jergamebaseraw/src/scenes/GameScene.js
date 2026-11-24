@@ -60,6 +60,7 @@ export class GameScene extends Phaser.Scene {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.A, right: Phaser.Input.Keyboard.KeyCodes.D, jump: Phaser.Input.Keyboard.KeyCodes.W },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.E,
             shootKey: Phaser.Input.Keyboard.KeyCodes.SPACE,
+            reloadKey: Phaser.Input.Keyboard.KeyCodes.R,
             dropKey: Phaser.Input.Keyboard.KeyCodes.Q
         });
         
@@ -67,6 +68,7 @@ export class GameScene extends Phaser.Scene {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.LEFT, right: Phaser.Input.Keyboard.KeyCodes.RIGHT, jump: Phaser.Input.Keyboard.KeyCodes.UP },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.K,
             shootKey: Phaser.Input.Keyboard.KeyCodes.J,
+            reloadKey: Phaser.Input.Keyboard.KeyCodes.I,
             dropKey: Phaser.Input.Keyboard.KeyCodes.L
         });
 
@@ -80,19 +82,16 @@ export class GameScene extends Phaser.Scene {
         this.uiManager = new UIManager(this);
         this.uiManager.createUI();
         this.uiManager.updateScore(this.scores);
+        this.uiManager.updateAmmo(this.players);
 
         this.audioManager = new AudioManager(this, 'background_music');
         this.audioManager.playMusic();
 
         this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
-        if (localStorage.getItem('tutorialSeen') === 'true') {
-            this.changeState(GAME_STATES.COUNTDOWN);
-        } else {
-            this.changeState(GAME_STATES.TUTORIAL);
-            this.scene.launch('TutorialScene');
-            this.scene.bringToTop('TutorialScene');
-        }
+        this.changeState(GAME_STATES.TUTORIAL);
+        this.scene.launch('TutorialScene');
+        this.scene.bringToTop('TutorialScene');
     }
 
     changeState(newState) {
@@ -147,6 +146,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     update(time, delta) {
+        this.uiManager.updateReloadProgress(this.players);
+
         if (this.currentState === GAME_STATES.GAME_OVER) {
             this.uiManager.updateGameOver();
             return;
@@ -168,6 +169,8 @@ export class GameScene extends Phaser.Scene {
         if (this.currentState !== GAME_STATES.PLAYING || this.roundResolving) return;
 
         this.roundResolving = true;
+        this.audioManager.playSFX('hit_sfx', { volume: 0.8 });
+        this.cameras.main.shake(180, 0.006);
         const winnerIndex = loser === this.player ? 1 : 0;
         this.scores[winnerIndex]++;
         const winnerName = winnerIndex === 0 ? 'Jugador 1' : 'Jugador 2';

@@ -91,10 +91,12 @@ export class WeaponManager {
             if (weapon.owner && weapon.owner.weapon === weapon) {
                 weapon.owner.unequipWeapon();
             }
+            weapon.cancelReload();
             weapon.bulletsGroup.clear(true, true);
             weapon.destroy();
         });
 
         this.displays.forEach(display => display.resetDisplay());
+        this.scene.uiManager?.updateAmmo(this.scene.players);
     }
 }

@@ -6,24 +6,33 @@ export class PauseScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.rectangle(400, 320, 800, 640, 0x0f172a, 0.92);
-        this.add.rectangle(400, 320, 440, 520, 0x172033, 1).setStrokeStyle(2, 0x334155);
+        this.add.rectangle(400, 320, 800, 640, 0x070b14, 0.9);
+        this.add.rectangle(400, 320, 500, 570, 0x111c2f, 1).setStrokeStyle(2, 0x475569);
+        this.add.rectangle(400, 70, 500, 4, 0xf59e0b);
         this.selectedIndex = 0;
         this.confirmActive = false;
 
-        this.add.text(400, 135, 'JUEGO EN PAUSA', {
-            fontSize: '44px',
-            color: '#ffffff',
+        this.add.text(400, 125, 'PAUSA', {
+            fontSize: '42px',
+            color: '#f8fafc',
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        this.add.text(400, 165, 'La partida está en pausa', {
+            fontSize: '16px',
+            color: '#94a3b8'
+        }).setOrigin(0.5);
 
-        const resumeBtn = this.createMenuButton(400, 245, 'CONTINUAR', () => this.resumeGame());
+        const resumeBtn = this.createMenuButton(400, 235, 'CONTINUAR', () => this.resumeGame());
         const optionsBtn = this.createMenuButton(400, 315, 'AJUSTES', () => this.openOptions());
-        const controlsBtn = this.createMenuButton(400, 385, 'CONTROLES', () => this.openControls());
-        const menuBtn = this.createMenuButton(400, 455, 'MENÚ PRINCIPAL', () => this.showExitConfirmation());
+        const controlsBtn = this.createMenuButton(400, 395, 'CONTROLES', () => this.openControls());
+        const menuBtn = this.createMenuButton(400, 475, 'MENÚ PRINCIPAL', () => this.showExitConfirmation());
         this.menuItems = [resumeBtn, optionsBtn, controlsBtn, menuBtn];
         this.updateSelection();
         this.createExitConfirmation();
+        this.add.text(400, 550, '↑ / ↓ ELEGIR    ENTER CONFIRMAR    ESC CONTINUAR', {
+            fontSize: '12px',
+            color: '#94a3b8'
+        }).setOrigin(0.5);
 
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         this.cursorUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
@@ -57,11 +66,15 @@ export class PauseScene extends Phaser.Scene {
 
     createMenuButton(x, y, label, callback) {
         const button = this.add.text(x, y, label, {
-            fontSize: '32px',
-            color: '#00ff00'
+            fontSize: '24px',
+            color: '#e2e8f0',
+            backgroundColor: '#1e293b',
+            padding: { x: 24, y: 12 },
+            fontStyle: 'bold'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setData('menuAction', callback)
+            .setData('menuLabel', label)
             .on('pointerover', () => {
                 this.selectedIndex = this.menuItems.indexOf(button);
                 this.updateSelection();
@@ -86,31 +99,34 @@ export class PauseScene extends Phaser.Scene {
     updateSelection() {
         if (!this.menuItems) return;
         this.menuItems.forEach((item, index) => {
-            item.setText(index === this.selectedIndex ? `> ${item.text.replace(/^> /, '')}` : item.text.replace(/^> /, ''));
-            item.setColor(index === this.selectedIndex ? '#ffff00' : '#00ff00');
+            const selected = index === this.selectedIndex;
+            item.setText(`${selected ? '› ' : ''}${item.getData('menuLabel')}`);
+            item.setColor(selected ? '#facc15' : '#e2e8f0');
+            item.setStroke('#f59e0b', selected ? 2 : 0);
+            item.setScale(selected ? 1.05 : 1);
         });
     }
 
     createExitConfirmation() {
-        this.exitOverlay = this.add.rectangle(400, 320, 800, 640, 0x020617, 0.78)
+        this.exitOverlay = this.add.rectangle(400, 320, 800, 640, 0x020617, 0.84)
             .setInteractive()
             .setVisible(false);
-        this.exitPanel = this.add.rectangle(400, 320, 500, 250, 0x172033, 1)
+        this.exitPanel = this.add.rectangle(400, 320, 500, 260, 0x111c2f, 1)
             .setStrokeStyle(2, 0xf59e0b)
             .setVisible(false);
-        this.exitTitle = this.add.text(400, 260, '¿Volver al menú?', {
-            fontSize: '32px',
-            color: '#ffffff',
+        this.exitTitle = this.add.text(400, 255, '¿Volver al menú?', {
+            fontSize: '30px',
+            color: '#f8fafc',
             fontStyle: 'bold'
         }).setOrigin(0.5).setVisible(false);
         this.exitMessage = this.add.text(400, 310, 'La partida actual se cerrará.', {
-            fontSize: '20px',
+            fontSize: '17px',
             color: '#cbd5e1'
         }).setOrigin(0.5).setVisible(false);
 
         this.confirmButtons = [
-            this.createConfirmButton(300, 385, 'SALIR', () => this.leaveToMenu()),
-            this.createConfirmButton(500, 385, 'SEGUIR', () => this.hideExitConfirmation())
+            this.createConfirmButton(300, 390, 'SALIR', () => this.leaveToMenu()),
+            this.createConfirmButton(500, 390, 'SEGUIR', () => this.hideExitConfirmation())
         ];
         this.confirmButtons.forEach(button => button.setVisible(false));
         this.confirmSelection = 1;
@@ -118,10 +134,11 @@ export class PauseScene extends Phaser.Scene {
 
     createConfirmButton(x, y, label, callback) {
         const button = this.add.text(x, y, label, {
-            fontSize: '24px',
-            color: '#22c55e',
-            backgroundColor: '#0f172a',
-            padding: { x: 14, y: 8 }
+            fontSize: '21px',
+            color: '#e2e8f0',
+            backgroundColor: '#1e293b',
+            padding: { x: 22, y: 10 },
+            fontStyle: 'bold'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setData('confirmAction', callback)
@@ -148,8 +165,10 @@ export class PauseScene extends Phaser.Scene {
 
     updateConfirmSelection() {
         this.confirmButtons.forEach((button, index) => {
-            button.setColor(index === this.confirmSelection ? '#facc15' : '#22c55e');
-            button.setScale(index === this.confirmSelection ? 1.08 : 1);
+            const selected = index === this.confirmSelection;
+            button.setColor(selected ? '#facc15' : '#e2e8f0');
+            button.setStroke('#f59e0b', selected ? 2 : 0);
+            button.setScale(selected ? 1.05 : 1);
         });
     }
 
