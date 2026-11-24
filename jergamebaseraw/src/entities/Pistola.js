@@ -1,0 +1,42 @@
+import { Weapon } from './Weapon.js';
+
+export class Pistola extends Weapon {
+    constructor(scene, x, y, textureKey) {
+        super(scene, x, y, textureKey, {
+            maxAmmoInMag: 5,
+            fireRate: 250,
+            bulletSpeed: 500,
+            fireSoundKey: 'pistol_sfx',
+            shotShake: 0.0015
+        });
+    }
+
+    onShoot() {
+        // Determinar el offset del cañón según hacia dónde mira el jugador
+        const offsetX = (this.owner.facing === 'right') ? 24 : -24;
+        const bulletX = this.owner.x + offsetX;
+        const bulletY = this.owner.y;
+        this.showMuzzleFlash(bulletX, bulletY);
+
+        // Crear el proyectil en el grupo de físicas heredado de Weapon
+        const bullet = this.bulletsGroup.create(bulletX, bulletY, 'bullet_dummy');
+
+        if (bullet) {
+            bullet.setData('shooter', this.owner);
+            // Desactivar gravedad para que la bala vaya en línea recta horizontal
+            bullet.body.allowGravity = false;
+            
+            const velocity = (this.owner.facing === 'right') ? this.bulletSpeed : -this.bulletSpeed;
+            bullet.setVelocityX(velocity);
+
+            // Destruir la bala tras 2 segundos si no choca antes contra una pared/suelo
+            this.scene.time.delayedCall(750, () => {
+                if (bullet.active) {
+                    bullet.destroy();
+                }
+            });
+        }
+
+        console.log(`[Pistola] ¡PUM! Balas restantes: ${this.currentAmmo}`);
+    }
+}

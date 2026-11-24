@@ -2,14 +2,9 @@
 
 # 
 
-#  1. Cabecera e Integrantes
+# TimberWars es un juego arcade multijugador 2D de acción frenética para navegador web ambientado en un mundo postapocalíptico dominado por castores. Los jugadores compiten en rondas rápidas recolectando armas para sobrevivir, donde un solo disparo o explosión basta para eliminar al rival y alzarse con la victoria.
 
-# 
-
-
-# * **Descripción de la temática:** [Escribe aquí un resumen corto del juego.]
-
-# * **Asignatura:** Juegos en Red (3º Grado en Diseño y Desarrollo de Videojuegos - URJC)
+# **Asignatura:** Juegos en Red 3º Grado en Diseño y Desarrollo de Videojuegos - URJC
 
 # 
 
@@ -27,18 +22,16 @@
 
 # 
 
-# ---
-
-# 
-
 #  2. Documentación del Juego (Game Design Document - GDD)
 
 # Puedes acceder al documento completo del diseño del juego aquí: **[GDD.md](./GDD.md)**
 
-# ***Controles:** J1 / J2 (Local)
+# **Controles:** J1 / J2 (Local)
 
 # &#x20; * Teclado: `WASD` / `Flechas de dirección` para movimiento.
 
 # &#x20; * Teclado: `E` / `K` recoger objeto.
 
-# &#x20; * Teclado: `Barra espaciadora` / `L` disparar.
+# &#x20; * Teclado: `Q` / `L` arrojar objeto.
+
+# &#x20; * Teclado: `Barra espaciadora` / `J` disparar.

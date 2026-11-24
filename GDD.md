@@ -58,15 +58,16 @@
 * **Sistema de Combate (One-Hit Kill):** El sistema de combate se basa en una única oportunidad de vida, es decir (muerte instantánea). Cualquier impacto directo de proyectil, explosión o peligro ambiental elimina al jugador al instante. Esta letalidad genera rondas de corta duración, con un ritmo de juego frenético y una alta rejugabilidad.
 * **Gestión de inventario:**
     * **Capacidad:** Cada castor puede transportar un máximo de un arma.
-    * **Acciones de Manipulación:** El jugador puede equipar, disparar o arrojar el arma en cualquier momento. Arrojar un arma sin munición o un objeto pesado puede utilizarse tácticamente como proyectil secundario para empujar a un rival.
-    * **Arsenal Temático y Convencional:** Se incluye una selección diversa de armas de fuego tradicionales (pistolas, escopetas, fusiles).
-* **Interacción social:** Hay un botón dedicado para emitir un sonido característico del castor que los jugadores pueden usar a modo de mofa o de interacción social entre partidas.
+    * **Acciones de Manipulación:** El jugador puede equipar, disparar o arrojar el arma en cualquier momento.
+    * **Arsenal Temático y Convencional:** Se incluye una selección diversa de armas de fuego tradicionales (pistolas, escopetas).
+* **Interacción social:** Hay un botón dedicado para emitir un sonido característico del castor que los jugadores pueden usar a modo de mofa o de interacción social entre partidas. (no implementado todavía)
 
 ### 4.3. Controles J1 / J2 (Local)
 * **Movimiento:** `WASD` / `Flechas direccionales`
-* **Recoger/Soltar:** `E` / `K`
-* **Disparar/Usar:** `Barra Espaciadora` / `L`
-* **Emote:** `C` / `M`
+* **Recoger:** `E` / `K`
+* **Tirar:** `E` / `L`
+* **Disparar/Usar:** `Barra Espaciadora` / `J`
+* **Emote:** `C` / `M`  (no implementado todavía)
 
 ### 4.4. Físicas
 * **Disparos:** De las físicas más relevantes, se incluye el sistema de disparos en el que el jugador al portar un arma y apretar el botón de disparo, disparará según las características del arma.
@@ -74,7 +75,7 @@
 * **Retroceso:** Al disparar un arma generará un retroceso en el que el jugador se eche para atrás según la fuerza del retroceso al disparar el arma.
 * **Salto y Caída libre:** El jugador podrá saltar los obstáculos o hacia las diferentes plataformas del escenario el cual contará con zonas sin suelo por las que el jugador podría morirse de caída.
 * **Muerte:** Al ser alcanzado por un disparo o impacto, el personaje pierde el control de forma inmediata y activa un sistema de físicas de cuerpo blando, colapsando y saliendo despedido según la dirección del impacto recibido.
-* **Objetos interactuables:** Habrá objetos repartidos por el escenario con los que el jugador podrá interactuar, es decir un barril que al dispararlo explota, una caja que se rompe..
+* **Objetos interactuables:** Habrá objetos repartidos por el escenario con los que el jugador podrá interactuar, es decir un barril que al dispararlo explota, una caja que se rompe.. (no implementado todavía)
 
 ### 4.5. Flujo de la partida
 * **Estructura de juego:** Accesible tanto en modo local (pantalla compartida) como en línea.
@@ -108,8 +109,8 @@ Durante la partida los personajes tendrán un dibujo más sencillo, mientras que
 Colores cálidos: como los castores son los personajes principales, usaremos una paleta de colores que guarde relación con el hábitat de estos animales, que suelen ser bosques y cuerpos de agua.
 
 ### 5.4. Cámara y perspectiva (Uso de cámara en 2D)
-La perspectiva será lateral, y la cámara será multiobjetivo con zoom dinámico: al ser multijugador se desea que la cámara capte a todos los jugadores y se acerque o aleje dependiendo de cómo de cerca estén los jugadores o cuántos queden vivos.
-Se usará una baja resolución y posteriormente se escalará, con un escalado de enteros para agrandar los píxeles.
+La perspectiva será lateral, y la cámara será multiobjetivo con zoom dinámico: al ser multijugador se desea que la cámara capte a todos los jugadores y se acerque o aleje dependiendo de cómo de cerca estén los jugadores o cuántos queden vivos. (no implementado todavía)
+Se usará una baja resolución y posteriormente se escalará, con un escalado de enteros para agrandar los píxeles. 
 
 ### 5.5. Bocetos
 ![ConceptEscenario](Imagenes/BocetoEscenario1.jpg)
@@ -149,9 +150,9 @@ Los personajes en este juego serán castores con diferentes rasgos que les difer
 ### 6.3. Armas
 Hay 5 tipos de armas por ahora:
 * **La pistola simple:** Una pistola semiautomática que llevan cada personaje por defecto, es muy buena ya que no ocupa casi espacio pero es más lenta a la hora de disparar.
-* **La uzi:** Subfusil semiautomático, es muy buena puesto que tiene una cadencia de disparo muy rápida pero con un alcance corto.
-* **Fusil:** Se encontrarán dispersos por el mundo, los cuales son muchos más grandes que las pistolas pero al ser un arma automática será notablemente más rápida entre disparos.
-* **Granadas:** Igual que los fusiles se encontraban dispersos por la zona y son muy volátiles, deberán de tener cuidado donde las lanzas, porque como te caiga en los pies podrás salir mal parado.
+* **La uzi:** Subfusil semiautomático, es muy buena puesto que tiene una cadencia de disparo muy rápida pero con un alcance corto. (no implementado todavía)
+* **Fusil:** Se encontrarán dispersos por el mundo, los cuales son muchos más grandes que las pistolas pero al ser un arma automática será notablemente más rápida entre disparos. (no implementado todavía) 
+* **Granadas:** Igual que los fusiles se encontraban dispersos por la zona y son muy volátiles, deberán de tener cuidado donde las lanzas, porque como te caiga en los pies podrás salir mal parado. (no implementado todavía)
 * **Escopeta:** Arma con gran daño, pero corto alcance. Es ideal para enfrentamientos a corta distancia a pesar de que tiene una cadencia baja.
 
 ---
