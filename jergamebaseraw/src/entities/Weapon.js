@@ -30,16 +30,35 @@ export class Weapon extends GameObject {
         }
     }
 
-    onPickUp(player) {
+    updatePosition() {
+        if (!this.isPickedUp || !this.owner) return;
+
+        const isFacingRight = (this.owner.facing === 'right' || this.owner.flipX);
+
+        const offsetX = isFacingRight ? 10 : -10;
+        const offsetY = 0;
+
+        this.setPosition(this.owner.x + offsetX, this.owner.y + offsetY);
+
+        this.setFlipX(!isFacingRight);
+
+        this.setDepth(this.owner.depth + 1);
+        }
+        
+        onPickUp(player) {
         if (this.isPickedUp) return;
 
         super.onPickUp(player);
         this.owner = player;
 
-        // Avisar al display de que el pedestal ha quedado libre
+        this.setVisible(true);
+        this.setActive(true);
+        this.setDepth(player.depth + 1);
+
         if (this.displayOwner) {
-            this.displayOwner.onPickedUp();
+            const display = this.displayOwner;
             this.displayOwner = null;
+            display.onPickedUp();
         }
 
         player.equipWeapon(this);

@@ -4,6 +4,7 @@ import { Player } from '../entities/Player.js';
 import { AudioManager } from '../managers/AudioManager.js';
 import { WeaponManager } from '../managers/WeaponManager.js';
 import { UIManager } from '../managers/UIManager.js';
+import { AnimManager } from '../managers/AnimManager.js';
 
 export const GAME_STATES = {
     INIT: 'INIT',
@@ -24,13 +25,22 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('madera_key', 'assets/images/Tileset2.png');
         this.load.image('tierra_key', 'assets/images/Tileset1.png');
         this.load.image('agua_key', 'assets/images/Agua.png');
         this.load.tilemapTiledJSON('mapa1_key', 'assets/images/MapaTimber.tmj');
+
         this.load.image('pistol', 'assets/images/pistol.png');
         this.load.image('shotgun', 'assets/images/shotgun.png');
         this.load.image('Display', 'assets/images/Display.png');
+
+        this.load.spritesheet('player_sheet1', 'assets/images/CastorAzul.png', {
+        frameWidth: 32,
+        frameHeight: 64
+        });
+        this.load.spritesheet('player_sheet2', 'assets/images/CastorRojo.png', {
+        frameWidth: 32,
+        frameHeight: 64
+        });
     }
 
     create() {
@@ -40,7 +50,6 @@ export class GameScene extends Phaser.Scene {
         this.createDummyTextures();
 
         this.mapManager = new SceneManager(this, 'mapa1_key');
-        this.mapManager.addTileset('Madera', 'madera_key');
         this.mapManager.addTileset('Tierra', 'tierra_key');
         this.mapManager.addTileset('Agua', 'agua_key');
 
@@ -55,15 +64,22 @@ export class GameScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, anchoMapa, altoMapa + 100);
         this.physics.world.setBoundsCollision(false, false, false, false);
 
+        //Animaciones
+        this.animManager = new AnimManager(this);
+        this.animManager.createPlayerAnimations();
+
         // Jugadores
-        this.player = new Player(this, 100, 400, 'player_dummy', {
+        this.InitPosY = 430;
+
+        this.player = new Player(this, 100, this.InitPosY, 'player_sheet1', {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.A, right: Phaser.Input.Keyboard.KeyCodes.D, jump: Phaser.Input.Keyboard.KeyCodes.W },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.E,
             shootKey: Phaser.Input.Keyboard.KeyCodes.SPACE,
             dropKey: Phaser.Input.Keyboard.KeyCodes.Q
         });
-        
-        this.player2 = new Player(this, anchoMapa - 100, 400, 'player2_dummy', {
+        this.player.setFlipX(true);
+
+        this.player2 = new Player(this, anchoMapa - 100, this.InitPosY, 'player_sheet2', {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.LEFT, right: Phaser.Input.Keyboard.KeyCodes.RIGHT, jump: Phaser.Input.Keyboard.KeyCodes.UP },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.K,
             shootKey: Phaser.Input.Keyboard.KeyCodes.J,
@@ -126,8 +142,8 @@ export class GameScene extends Phaser.Scene {
                 break;
 
             case GAME_STATES.ROUND_OVER:
-                this.physics.pause();
                 this.freezePlayers();
+
                 this.time.delayedCall(1500, () => this.resetRound());
                 break;
 
@@ -140,7 +156,12 @@ export class GameScene extends Phaser.Scene {
     }
 
     freezePlayers() {
-        this.players.forEach(p => p && p.setVelocity(0, 0));
+        this.players.forEach(p => {
+            if (!p.isDead) {
+                p.setVelocity(0, 0);
+                p.anims.play(`${p.texture.key}_idle`, true);
+            }
+        });
     }
 
     update(time, delta) {
@@ -191,8 +212,8 @@ export class GameScene extends Phaser.Scene {
         this.weaponManager.resetAll();
 
         const spawnPositions = [
-            [100, 400],
-            [this.mapManager.map.widthInPixels - 100, 400]
+            [100, this.InitPosY],
+            [this.mapManager.map.widthInPixels - 100, this.InitPosY]
         ];
 
         this.players.forEach((player, index) => {

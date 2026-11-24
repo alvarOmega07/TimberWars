@@ -30,7 +30,7 @@ export class Pistola extends Weapon {
             bullet.setVelocityX(velocity);
 
             // Destruir la bala tras 2 segundos si no choca antes contra una pared/suelo
-            this.scene.time.delayedCall(2000, () => {
+            this.scene.time.delayedCall(750, () => {
                 if (bullet.active) {
                     bullet.destroy();
                 }

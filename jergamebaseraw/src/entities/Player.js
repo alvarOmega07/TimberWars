@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 export class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, textureKey = 'player_dummy', controls = {}) {
         super(scene, x, y, textureKey);
-
         // Añadir a la escena y activar físicas
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -28,6 +27,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             shoot: keyboard.addKey(controls.shootKey || Phaser.Input.Keyboard.KeyCodes.SPACE),
             drop: keyboard.addKey(controls.dropKey || Phaser.Input.Keyboard.KeyCodes.Q)
         };
+
+        this.on('animationcomplete', (anim) => {
+        if (anim.key === 'player_jump' && !this.body.blocked.down) {
+            this.anims.play('player_fall', true);
+        }
+        });
+
+        this.body.setSize(32, 50);
+        this.body.setOffset(8, 0);
+
+        this.on('animationcomplete', (anim) => {
+            if (anim.key === `${this.texture.key}_jump` && !this.body.blocked.down) {
+                this.anims.play(`${this.texture.key}_fall`, true);
+            }
+        });
     }
 
     tryPickUp(nearbyObject) {
@@ -75,6 +89,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     useWeapon(){
         if (!this.getWeapon()) return;
 
+        this.weapon.updatePosition();
+
         // Disparar con la tecla asignada al jugador.
         if (this.keys.shoot.isDown) {
             this.weapon.shoot();
@@ -87,28 +103,44 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     move() {
-        // Movimiento Horizontal
+        if (this.isDead) return;
+
+        const animKey = this.texture.key;
+
         if (this.keys.left.isDown) {
             this.setVelocityX(-160);
             this.facing = 'left';
-            this.setFlipX(true); // Invierte la imagen horizontalmente cuando mira a la izquierda
+            this.setFlipX(false);
         } else if (this.keys.right.isDown) {
             this.setVelocityX(160);
             this.facing = 'right';
-            this.setFlipX(false); // Orientación original hacia la derecha
+            this.setFlipX(true);
         } else {
             this.setVelocityX(0);
         }
 
-        // Salto
         if (this.keys.jump.isDown && this.body.blocked.down) {
             this.setVelocityY(-350);
+            this.anims.play(`${animKey}_jump`, true);
+        }
+
+        if (!this.body.blocked.down) {
+            if (this.anims.currentAnim?.key !== `${animKey}_jump`) {
+                this.anims.play(`${animKey}_fall`, true);
+            }
+        } else if (this.body.velocity.x !== 0) {
+            this.anims.play(`${animKey}_run`, true);
+        } else {
+            this.anims.play(`${animKey}_idle`, true);
         }
     }
 
     die(){
         if (this.isDead) return;
+        
         this.isDead = true;
+        this.setVelocityX(0);
+        this.anims.play(this.texture.key + '_death', true);
         this.scene.playerDied(this);
     }
 
