@@ -60,7 +60,6 @@ export class GameScene extends Phaser.Scene {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.A, right: Phaser.Input.Keyboard.KeyCodes.D, jump: Phaser.Input.Keyboard.KeyCodes.W },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.E,
             shootKey: Phaser.Input.Keyboard.KeyCodes.SPACE,
-            reloadKey: Phaser.Input.Keyboard.KeyCodes.R,
             dropKey: Phaser.Input.Keyboard.KeyCodes.Q
         });
         
@@ -68,7 +67,6 @@ export class GameScene extends Phaser.Scene {
             moveKeys: { left: Phaser.Input.Keyboard.KeyCodes.LEFT, right: Phaser.Input.Keyboard.KeyCodes.RIGHT, jump: Phaser.Input.Keyboard.KeyCodes.UP },
             pickupKey: Phaser.Input.Keyboard.KeyCodes.K,
             shootKey: Phaser.Input.Keyboard.KeyCodes.J,
-            reloadKey: Phaser.Input.Keyboard.KeyCodes.I,
             dropKey: Phaser.Input.Keyboard.KeyCodes.L
         });
 
@@ -146,8 +144,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        this.uiManager.updateReloadProgress(this.players);
-
         if (this.currentState === GAME_STATES.GAME_OVER) {
             this.uiManager.updateGameOver();
             return;

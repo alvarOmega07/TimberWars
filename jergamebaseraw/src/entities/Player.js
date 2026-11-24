@@ -26,8 +26,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             jump: keyboard.addKey(this.moveKeys.jump),
             pickup: keyboard.addKey(controls.pickupKey || Phaser.Input.Keyboard.KeyCodes.E),
             shoot: keyboard.addKey(controls.shootKey || Phaser.Input.Keyboard.KeyCodes.SPACE),
-            reload: keyboard.addKey(controls.reloadKey || Phaser.Input.Keyboard.KeyCodes.R),
-            drop: keyboard.addKey(controls.dropKey || Phaser.Input.Keyboard.KeyCodes.G)
+            drop: keyboard.addKey(controls.dropKey || Phaser.Input.Keyboard.KeyCodes.Q)
         };
     }
 
@@ -79,10 +78,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         // Disparar con la tecla asignada al jugador.
         if (this.keys.shoot.isDown) {
             this.weapon.shoot();
-        }
-
-        if (Phaser.Input.Keyboard.JustDown(this.keys.reload)) {
-            this.weapon.reload();
         }
 
         // Tirar / soltar el arma con la tecla asignada al jugador.

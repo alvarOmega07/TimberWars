@@ -10,7 +10,6 @@ export class Weapon extends GameObject {
         this.maxAmmoInMag = config.maxAmmoInMag || 6;
         this.currentAmmo = this.maxAmmoInMag;
         this.fireRate = config.fireRate || 250;
-        this.reloadTime = config.reloadTime || 1500;
         this.bulletSpeed = config.bulletSpeed || 400;
         this.fireSoundKey = config.fireSoundKey || 'pistol_sfx';
         this.shotShake = config.shotShake || 0.0015;
@@ -18,9 +17,6 @@ export class Weapon extends GameObject {
         this.lastFired = 0;
         this.owner = null;
         this.displayOwner = null; // Referencia al display que la contenía
-        this.isReloading = false;
-        this.reloadTimer = null;
-        this.reloadStartedAt = null;
         this.setDrag(150);
 
         
@@ -51,7 +47,6 @@ export class Weapon extends GameObject {
 
     shoot() {
         if (!this.isPickedUp || !this.owner) return;
-        if (this.isReloading) return;
         if (this.currentAmmo <= 0) return;
 
         const time = this.scene.time.now;
@@ -80,41 +75,6 @@ export class Weapon extends GameObject {
         });
     }
 
-    reload() {
-        if (!this.isPickedUp || !this.owner || this.isReloading ||
-            this.currentAmmo >= this.maxAmmoInMag) {
-            return;
-        }
-
-        const owner = this.owner;
-        this.isReloading = true;
-        this.reloadStartedAt = this.scene.time.now;
-        this.scene.uiManager?.updateAmmo(this.scene.players);
-        this.scene.audioManager?.playSFX('reload_sfx', { volume: 0.45 });
-        this.reloadTimer = this.scene.time.delayedCall(this.reloadTime, () => {
-            this.reloadTimer = null;
-            this.isReloading = false;
-            this.reloadStartedAt = null;
-
-            if (!this.isPickedUp || this.owner !== owner) {
-                this.scene.uiManager?.updateAmmo(this.scene.players);
-                return;
-            }
-
-            this.currentAmmo = this.maxAmmoInMag;
-            this.scene.uiManager?.updateAmmo(this.scene.players);
-        });
-    }
-
-    cancelReload() {
-        if (this.reloadTimer) {
-            this.reloadTimer.remove(false);
-            this.reloadTimer = null;
-        }
-        this.isReloading = false;
-        this.reloadStartedAt = null;
-    }
-
     onShoot() {
         console.warn("[Weapon] onShoot() no ha sido implementado en la clase hija.");
     }
@@ -123,7 +83,6 @@ export class Weapon extends GameObject {
         if (!this.isPickedUp || !this.owner) return;
 
         const player = this.owner;
-        this.cancelReload();
 
         this.setPosition(player.x, player.y);
         this.setVisible(true);
@@ -145,6 +104,10 @@ export class Weapon extends GameObject {
             this.setVelocity(dropImpulseX, -100);
         }
 
+        if (this.currentAmmo === 0) {
+            this.setTint(0x64748b);
+        }
+
         this.isPickedUp = false;
         this.owner = null;
         player.unequipWeapon();
@@ -153,7 +116,6 @@ export class Weapon extends GameObject {
     }
 
     resetTo(x, y) {
-        this.cancelReload();
         if (this.owner) {
             this.owner.unequipWeapon();
         }

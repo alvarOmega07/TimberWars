@@ -4,7 +4,6 @@ export class Pistola extends Weapon {
     constructor(scene, x, y, textureKey) {
         super(scene, x, y, textureKey, {
             maxAmmoInMag: 5,
-            reloadTime: 1500,
             fireRate: 250,
             bulletSpeed: 500,
             fireSoundKey: 'pistol_sfx',

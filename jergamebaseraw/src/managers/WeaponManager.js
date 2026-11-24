@@ -61,7 +61,8 @@ export class WeaponManager {
 
         // 1. Buscar en displays ocupados
         this.displays.forEach(display => {
-            if (display.isOccupied && display.currentWeapon) {
+            if (display.isOccupied && display.currentWeapon &&
+                display.currentWeapon.currentAmmo > 0) {
                 if (this.scene.physics.overlap(player, display.currentWeapon)) {
                     nearbyItem = display.currentWeapon;
                 }
@@ -71,7 +72,7 @@ export class WeaponManager {
         // 2. Buscar armas tiradas sueltas en el suelo
         if (!nearbyItem) {
             this.scene.physics.overlap(player, this.grupoArmas, (p, weapon) => {
-                if (!weapon.isPickedUp) {
+                if (!weapon.isPickedUp && weapon.currentAmmo > 0) {
                     nearbyItem = weapon;
                 }
             });
@@ -91,7 +92,6 @@ export class WeaponManager {
             if (weapon.owner && weapon.owner.weapon === weapon) {
                 weapon.owner.unequipWeapon();
             }
-            weapon.cancelReload();
             weapon.bulletsGroup.clear(true, true);
             weapon.destroy();
         });

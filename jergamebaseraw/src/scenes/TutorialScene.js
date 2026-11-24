@@ -41,8 +41,7 @@ export class TutorialScene extends Phaser.Scene {
             'Saltar      W',
             'Recoger     E',
             'Disparar    ESPACIO',
-            'Recargar    R',
-            'Soltar      G'
+            'Soltar      Q'
         ].join('\n'), {
             fontSize: '15px',
             color: '#cbd5e1',
@@ -53,7 +52,6 @@ export class TutorialScene extends Phaser.Scene {
             'Saltar      ↑',
             'Recoger     K',
             'Disparar    J',
-            'Recargar    I',
             'Soltar      L'
         ].join('\n'), {
             fontSize: '15px',

@@ -10,7 +10,6 @@ export class MenuScene extends Phaser.Scene {
         this.load.audio('hit_sfx', 'assets/audio/hit.mp3');
         this.load.audio('pistol_sfx', 'assets/audio/pistol_sfx.wav');
         this.load.audio('shotgun_sfx', 'assets/audio/shotgun_sfx.wav');
-        this.load.audio('reload_sfx', 'assets/audio/reload_sfx.wav');
     }
 
     create() {

@@ -4,7 +4,6 @@ export class Escopeta extends Weapon {
     constructor(scene, x, y) {
         super(scene, x, y, 'shotgun', {
             maxAmmoInMag: 2,
-            reloadTime: 750,
             fireRate: 350,
             bulletSpeed: 500,
             fireSoundKey: 'shotgun_sfx',

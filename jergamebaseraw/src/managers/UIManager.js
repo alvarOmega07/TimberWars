@@ -2,7 +2,6 @@ export class UIManager {
     constructor(scene) {
         this.scene = scene;
         this.playerHudTexts = null;
-        this.reloadBars = null;
         this.scores = [0, 0];
         this.players = [];
         this.roundMessage = null;
@@ -28,22 +27,6 @@ export class UIManager {
                 align: 'right'
             }).setOrigin(1, 1).setDepth(50)
         ];
-        const reloadBarWidth = 210;
-        this.reloadBars = [
-            { x: 16, color: 0x60a5fa },
-            { x: 574, color: 0xf87171 }
-        ].map(({ x, color }) => {
-            const background = this.scene.add.rectangle(x, 566, reloadBarWidth, 6, 0x334155)
-                .setOrigin(0, 0.5)
-                .setDepth(49)
-                .setVisible(false);
-            const fill = this.scene.add.rectangle(x, 566, reloadBarWidth, 6, color)
-                .setOrigin(0, 0.5)
-                .setDepth(50)
-                .setScale(0, 1)
-                .setVisible(false);
-            return { background, fill };
-        });
 
         this.roundMessage = this.scene.add.text(400, 88, '', {
             fontSize: '20px',
@@ -105,27 +88,6 @@ export class UIManager {
         if (!players) return;
         this.players = players;
         this.updatePlayerHud();
-        this.updateReloadProgress(players);
-    }
-
-    updateReloadProgress(players) {
-        if (!this.reloadBars || !players) return;
-
-        this.reloadBars.forEach(({ background, fill }, index) => {
-            const weapon = players[index]?.weapon;
-            if (!weapon || !weapon.isReloading || weapon.reloadStartedAt === null) {
-                background.setVisible(false);
-                fill.setVisible(false);
-                fill.setScale(0, 1);
-                return;
-            }
-
-            const progress = Math.max(0, Math.min(1,
-                (this.scene.time.now - weapon.reloadStartedAt) / weapon.reloadTime));
-            background.setVisible(true);
-            fill.setVisible(true);
-            fill.setScale(progress, 1);
-        });
     }
 
     updatePlayerHud() {
@@ -135,9 +97,10 @@ export class UIManager {
             const player = this.players[index];
             let ammo = '—';
             if (player && player.weapon) {
-                ammo = player.weapon.isReloading
-                    ? 'RECARGANDO'
-                    : `${player.weapon.currentAmmo}/${player.weapon.maxAmmoInMag}`;
+                ammo = `${player.weapon.currentAmmo}/${player.weapon.maxAmmoInMag}`;
+                if (player.weapon.currentAmmo === 0) {
+                    ammo += ` · SOLTAR ${index === 0 ? 'Q' : 'L'}`;
+                }
             }
             hud.setText(`JUGADOR ${index + 1}\nPUNTOS: ${this.scores[index]}   MUNICIÓN: ${ammo}`);
         });

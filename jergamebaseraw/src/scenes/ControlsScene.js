@@ -42,8 +42,7 @@ export class ControlsScene extends Phaser.Scene {
             'SALTAR    W',
             'RECOGER   E',
             'DISPARAR  ESPACIO',
-            'RECARGAR  R',
-            'SOLTAR    G'
+            'SOLTAR    Q'
         ].join('\n'), {
             fontSize: '16px',
             color: '#cbd5e1',
@@ -54,7 +53,6 @@ export class ControlsScene extends Phaser.Scene {
             'SALTAR    ↑',
             'RECOGER   K',
             'DISPARAR  J',
-            'RECARGAR  I',
             'SOLTAR    L'
         ].join('\n'), {
             fontSize: '16px',
