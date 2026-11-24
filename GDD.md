@@ -116,6 +116,15 @@ Se usará una baja resolución y posteriormente se escalará, con un escalado de
 ![PistolaSimple](Imagenes/Pistola_T.png)
 ![Escopeta](Imagenes/Escopeta_T.png)
 
+### 5.5.1 Tileset
+![Tileset](Imagenes/Tileset1.png)
+
+### 5.5.2 Spritesheet y sprites
+![CastorRojo](Imagenes/Castor_Rojo.png)
+![CastorAzul](Imagenes/Castor_Azul.png)
+![Pistola](Imagenes/Pistola.png)
+![Escopeta](Imagenes/Escopeta.png)
+
 
 ### 5.6. Inspiración
 La principal inspiración de este juego es Duck Game, pero también hay cierta inspiración en el juego Smash Bros.
