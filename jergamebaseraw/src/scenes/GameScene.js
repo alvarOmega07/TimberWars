@@ -34,6 +34,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.currentState = GAME_STATES.INIT;
+        this.scores = [0, 0];
+        this.roundResolving = false;
         this.createDummyTextures();
 
         this.mapManager = new SceneManager(this, 'mapa1_key');
@@ -135,8 +138,6 @@ export class GameScene extends Phaser.Scene {
                 this.physics.pause();
                 this.freezePlayers();
                 if (this.audioManager) this.audioManager.pauseMusic();
-
-                this.time.delayedCall(3000, () => this.scene.restart());
                 break;
         }
     }
@@ -146,6 +147,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     update(time, delta) {
+        if (this.currentState === GAME_STATES.GAME_OVER) {
+            this.uiManager.updateGameOver();
+            return;
+        }
+
         if (Phaser.Input.Keyboard.JustDown(this.pauseKey) && this.currentState === GAME_STATES.PLAYING) {
             this.changeState(GAME_STATES.PAUSED);
         }
@@ -171,8 +177,10 @@ export class GameScene extends Phaser.Scene {
         loser.body.enable = false;
 
         if (this.scores[winnerIndex] === 3) {
-            this.uiManager.setMessage(`¡${winnerName} gana la partida!`);
             this.changeState(GAME_STATES.GAME_OVER);
+            this.uiManager.showGameOver(winnerName, () => {
+                this.scene.restart();
+            }, () => this.scene.start('MenuScene'));
             return;
         }
 

@@ -81,6 +81,20 @@ export class WeaponManager {
     }
 
     resetAll() {
+        this.displays.forEach(display => {
+            display.currentWeapon = null;
+            display.isOccupied = false;
+        });
+
+        const weapons = [...this.grupoArmas.getChildren()];
+        weapons.forEach(weapon => {
+            if (weapon.owner && weapon.owner.weapon === weapon) {
+                weapon.owner.unequipWeapon();
+            }
+            weapon.bulletsGroup.clear(true, true);
+            weapon.destroy();
+        });
+
         this.displays.forEach(display => display.resetDisplay());
     }
 }

@@ -61,7 +61,7 @@ export class WeaponDisplay extends Phaser.GameObjects.Sprite {
     }
 
     respawnWeapon() {
-        if (!this.scene.weaponManager) return;
+        if (this.isOccupied || !this.scene.weaponManager) return;
 
         // Instanciar de nuevo la misma clase de arma
         const newWeapon = new this.WeaponClass(this.scene, this.x, this.y - 12, this.weaponTextureKey);
