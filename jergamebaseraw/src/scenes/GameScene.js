@@ -26,6 +26,7 @@ export class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('tierra_key', 'assets/images/Tileset1.png');
+        this.load.image('madera_key', 'assets/images/Tileset2.png');
         this.load.image('agua_key', 'assets/images/Agua.png');
         this.load.tilemapTiledJSON('mapa1_key', 'assets/images/MapaTimber.tmj');
 
@@ -52,6 +53,7 @@ export class GameScene extends Phaser.Scene {
         this.mapManager = new SceneManager(this, 'mapa1_key');
         this.mapManager.addTileset('Tierra', 'tierra_key');
         this.mapManager.addTileset('Agua', 'agua_key');
+        this.mapManager.addTileset('Madera', 'madera_key');
 
         this.capaAgua = this.mapManager.createLayer('Agua', false);
         this.capaFondo = this.mapManager.createLayer('Fondo', false);
